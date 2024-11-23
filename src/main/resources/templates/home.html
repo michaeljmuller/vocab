@@ -42,7 +42,10 @@
                     }
                     else {
                         const spanishWord = document.getElementById('spanish-word');
-                        spanishWord.innerText = response.spanish;
+                        spanishWord.innerText = response.word.spanish;
+
+                        const progress = document.getElementById('progress');
+                        progress.innerText = response.numLearned + " of " + response.numWords + " words learned";
                     }
                 }
             }
@@ -70,16 +73,16 @@
             const resultElement = document.getElementById('result');
             const answer = answerElement.value;
             let isCorrect = false;
-            for (const english of response.english) {
+            for (const english of response.word.english) {
                 if (answer.toUpperCase() === english.toUpperCase()) {
                     isCorrect = true;
                     break;
                 }
             }
             let resultText = isCorrect ? "CORRECT! " : "WRONG. ";
-            resultText += response.spanish;
+            resultText += response.word.spanish;
             resultText += " = ";
-            resultText += response.english.join(", ");
+            resultText += response.word.english.join(", ");
 
             if (!isCorrect && answer != "") {
                 resultText += " (you answered \"" + answer + "\")";
@@ -87,7 +90,7 @@
 
             resultElement.innerText = resultText;
 
-            putAnswer(response.spanish, isCorrect);
+            putAnswer(response.word.spanish, isCorrect);
 
             answerElement.value = "";
             getWord();
@@ -114,6 +117,7 @@
 <body>
 
 <div id="outer">
+    <div id="progress"></div>
     <form id="form">
         <div id="spanish-word">&nbsp;</div>
         <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
