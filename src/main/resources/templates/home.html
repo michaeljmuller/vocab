@@ -14,12 +14,16 @@
             margin-bottom: 10px;
         }
 
-        #result {
+        #result-container {
             margin-top: 25px;
         }
 
         #outer {
             margin: 50px;
+        }
+
+        #disagree {
+            display: none;
         }
     </style>
     <script type="application/javascript">
@@ -71,6 +75,8 @@
         function handleSubmit() {
             const answerElement = document.getElementById('answer');
             const resultElement = document.getElementById('result');
+            const disagreeElement = document.getElementById('disagree');
+
             const answer = answerElement.value;
             let isCorrect = false;
             for (const english of response.word.english) {
@@ -80,15 +86,20 @@
                 }
             }
             let resultText = isCorrect ? "CORRECT! " : "WRONG. ";
+            if (answer == "") {
+                resultText = "";
+            }
             resultText += response.word.spanish;
             resultText += " = ";
             resultText += response.word.english.join(", ");
 
-            if (!isCorrect && answer != "") {
+            const displayDisagree = !isCorrect && answer != '';
+            if (displayDisagree) {
                 resultText += " (you answered \"" + answer + "\")";
             }
 
             resultElement.innerText = resultText;
+            disagreeElement.style.display = displayDisagree ? 'inline' : 'none';
 
             putAnswer(response.word.spanish, isCorrect);
 
@@ -110,6 +121,8 @@
                 }
             });
 
+            textField.focus();
+
             getWord();
         }
     </script>
@@ -125,7 +138,7 @@
         <!-- this dummy button prevents the form from being submitted when the user hits enter -->
         <button type="submit" disabled style="display: none" aria-hidden="true"></button>
         <button id="button">Submit</button>
-        <div id="result"></div>
+        <div id="result-container"><span id="result"></span>&nbsp;<a href="javascript:;" id="disagree">Disagree? Let me know.</a></div>
     </form>
 </div>
 

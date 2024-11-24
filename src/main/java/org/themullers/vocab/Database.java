@@ -109,6 +109,7 @@ public class Database {
             select word from correct_count 
             where user=:user 
             and language=:language
+            and correct_count.correct_count > 0
         """;
     }
 }
