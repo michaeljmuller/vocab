@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.themullers.vocab.pojo.Language;
-import org.themullers.vocab.rest.Api;
 
 @Component
 public class ProgressPersister {
@@ -15,11 +14,11 @@ public class ProgressPersister {
     private final Log logger = LogFactory.getLog(ProgressPersister.class);
 
     Database db;
-    VocabularyFile vocabularyFile;
+    Vocabulary vocabulary;
 
-    public ProgressPersister(Database db, VocabularyFile vocabularyFile) {
+    public ProgressPersister(Database db, Vocabulary vocabulary) {
         this.db = db;
-        this.vocabularyFile = vocabularyFile;
+        this.vocabulary = vocabulary;
     }
 
     public Progress getProgress() {
@@ -33,7 +32,7 @@ public class ProgressPersister {
             logger.debug(String.format("user has learned %d spanish words already", knownSpanishWords.size()));
 
             // loop through all the spanish words, adding them to the "known" or "not known" maps
-            var spanishWords = vocabularyFile.getSpanishWords();
+            var spanishWords = vocabulary.getSpanishWords();
             logger.debug(String.format("there are %d words in the vocabulary file", spanishWords.size()));
             for (var spanishWord : spanishWords) {
                 if (knownSpanishWords.contains(spanishWord.getSpanish())) {

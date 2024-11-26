@@ -6,18 +6,18 @@ import org.springframework.web.servlet.ModelAndView;
 @org.springframework.stereotype.Controller
 public class Controller {
 
-    VocabularyFile vocabularyFile;
+    Vocabulary vocabulary;
 
-    public Controller(VocabularyFile vocabularyFile) {
-        this.vocabularyFile = vocabularyFile;
+    public Controller(Vocabulary vocabulary) {
+        this.vocabulary = vocabulary;
     }
 
     @GetMapping("/")
     public ModelAndView home() {
         var mv = new ModelAndView("home");
-        mv.addObject("vocab", vocabularyFile.getEntries());
-        mv.addObject("spanishWords", vocabularyFile.getSpanishWords());
-        mv.addObject("englishWords", vocabularyFile.getEnglishWords());
+        mv.addObject("vocab", vocabulary.getEntries());
+        mv.addObject("spanishWords", vocabulary.getSpanishWords());
+        mv.addObject("englishWords", vocabulary.getEnglishWords());
         return mv;
     }
 }

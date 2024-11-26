@@ -16,12 +16,6 @@ import java.nio.charset.StandardCharsets;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class VocabApplication {
 
-	protected VocabularyFile vocabularyFile;
-
-	public VocabApplication(VocabularyFile vocabularyFile) {
-		this.vocabularyFile = vocabularyFile;
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(VocabApplication.class, args);
 	}
