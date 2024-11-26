@@ -38,3 +38,4 @@ build/
 vocab.csv
 vocab.db
 vocab-google-service-account-key.json
+vocab-users.htpasswd
