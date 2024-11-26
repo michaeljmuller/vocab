@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vocabulary</title>
+    <style>
+        body, input, button {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 20pt;
+        }
+
+        #spanish-word {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #result-container {
+            margin-top: 25px;
+        }
+
+        #outer {
+            margin: 50px;
+        }
+
+        #disagree {
+            display: none;
+        }
+    </style>
+    <script type="application/javascript">
+
+        let response;
+
+        function getWord() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/word', true);
+
+            xhr.onreadystatechange = function () {
+
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+
+                    response = JSON.parse(xhr.responseText);
+
+                    // if there was a server error, the response is in a different format; convert it
+                    if (Object.hasOwn(response, 'status')) {
+                        alert("Server error: " + response.message);
+                    }
+                    else {
+                        const spanishWord = document.getElementById('spanish-word');
+                        spanishWord.innerText = response.word.spanish;
+
+                        const progress = document.getElementById('progress');
+                        progress.innerText = response.numLearned + " of " + response.numWords + " words learned";
+                    }
+                }
+            }
+
+            xhr.send();
+        }
+
+        function putAnswer(word, isCorrect) {
+            const requestBody = JSON.stringify({
+                word: word,
+                answeredCorrectly: isCorrect
+            });
+
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('PUT', '/word', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("X-CSRF-TOKEN", csrfToken);
+            xhr.send(requestBody);
+        }
+
+        function handleSubmit() {
+            const answerElement = document.getElementById('answer');
+            const resultElement = document.getElementById('result');
+            const disagreeElement = document.getElementById('disagree');
+
+            const answer = answerElement.value;
+            let isCorrect = false;
+            for (const english of response.word.english) {
+                if (answer.toUpperCase() === english.toUpperCase()) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+            let resultText = isCorrect ? "CORRECT! " : "WRONG. ";
+            if (answer == "") {
+                resultText = "";
+            }
+            resultText += response.word.spanish;
+            resultText += " = ";
+            resultText += response.word.english.join(", ");
+
+            const displayDisagree = !isCorrect && answer != '';
+            if (displayDisagree) {
+                resultText += " (you answered \"" + answer + "\")";
+            }
+
+            resultElement.innerText = resultText;
+            disagreeElement.style.display = displayDisagree ? 'inline' : 'none';
+
+            putAnswer(response.word.spanish, isCorrect);
+
+            answerElement.value = "";
+            getWord();
+        }
+
+        window.onload = function() {
+            const button = document.getElementById('button');
+            const textField = document.getElementById('answer');
+            button.onclick = function(event) {
+                // prevent the form from actually submitting, causing a page reload
+                event.preventDefault();
+                handleSubmit();
+            }
+            textField.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    handleSubmit();
+                }
+            });
+
+            textField.focus();
+
+            getWord();
+        }
+    </script>
+</head>
+<body>
+
+<div id="outer">
+    <div id="progress"></div>
+    <form id="form">
+        <div id="spanish-word">&nbsp;</div>
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+        <input type="text" id="answer" placeholder="english translation here">
+        <!-- this dummy button prevents the form from being submitted when the user hits enter -->
+        <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+        <button id="button">Submit</button>
+        <div id="result-container"><span id="result"></span>&nbsp;<a href="javascript:;" id="disagree">Disagree? Let me know.</a></div>
+    </form>
+</div>
+
+</body>
+</html>
