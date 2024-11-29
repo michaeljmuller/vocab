@@ -1,6 +1,7 @@
 package org.themullers.vocab;
 
 import org.themullers.vocab.pojo.SpanishWord;
+import org.themullers.vocab.pojo.WordAndGender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Progress {
-    Map<String, SpanishWord> spanishWordsLearned = new HashMap<>();
-    Map<String, SpanishWord> spanishWordsNotLearned = new HashMap<>();
+    Map<WordAndGender, SpanishWord> spanishWordsLearned = new HashMap<>();
+    Map<WordAndGender, SpanishWord> spanishWordsNotLearned = new HashMap<>();
 
     public SpanishWord getRandomUnlearnedSpanishWord() {
         var words = new ArrayList<>(spanishWordsNotLearned.values());
@@ -17,19 +18,19 @@ public class Progress {
         return word;
     }
 
-    public Map<String, SpanishWord> getSpanishWordsLearned() {
+    public Map<WordAndGender, SpanishWord> getSpanishWordsLearned() {
         return spanishWordsLearned;
     }
 
-    public void setSpanishWordsLearned(Map<String, SpanishWord> spanishWordsLearned) {
+    public void setSpanishWordsLearned(Map<WordAndGender, SpanishWord> spanishWordsLearned) {
         this.spanishWordsLearned = spanishWordsLearned;
     }
 
-    public Map<String, SpanishWord> getSpanishWordsNotLearned() {
+    public Map<WordAndGender, SpanishWord> getSpanishWordsNotLearned() {
         return spanishWordsNotLearned;
     }
 
-    public void setSpanishWordsNotLearned(Map<String, SpanishWord> spanishWordsNotLearned) {
+    public void setSpanishWordsNotLearned(Map<WordAndGender, SpanishWord> spanishWordsNotLearned) {
         this.spanishWordsNotLearned = spanishWordsNotLearned;
     }
 }

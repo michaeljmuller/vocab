@@ -1,16 +1,30 @@
 package org.themullers.vocab.pojo;
 
-public class Word {
+abstract public class Word {
+    protected int wordId;
     protected PartOfSpeech partOfSpeech;
     protected Gender gender;
     protected boolean isPlural;
     protected String verbInfo;
 
-    Word(PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo) {
+    Word(int wordId, PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo) {
+        this.wordId = wordId;
         this.partOfSpeech = partOfSpeech;
         this.gender = gender;
         this.isPlural = isPlural;
         this.verbInfo = verbInfo;
+    }
+
+    public WordAndGender getWordAndGender() {
+        return new WordAndGender(wordId, gender);
+    }
+
+    public int getWordId() {
+        return wordId;
+    }
+
+    public void setWordId(int wordId) {
+        this.wordId = wordId;
     }
 
     public PartOfSpeech getPartOfSpeech() {

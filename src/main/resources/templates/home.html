@@ -4,6 +4,33 @@
     <meta charset="UTF-8">
     <title>Vocabulary</title>
     <style>
+        body, input, button {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 20pt;
+        }
+
+        body {
+            margin: 50px;
+        }
+
+        button {
+            padding: 10px;
+            padding: .5rem 1rem;
+            font-size: 1.25rem;
+            line-height: 1.5;
+            border-radius: .3rem;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            text-transform: none;
+            transition: all .15s ease-in-out;
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+            vertical-align: middle;
+        }
+
     </style>
     <script type="application/javascript">
     </script>
@@ -14,7 +41,8 @@
     <p>There are <span th:text="${wordCount}"></span> words to learn, but with masculine/feminine variation,
        it looks more like <span th:text="${expandedSpanishWordCount}"></span> words.</p>
     <p>You have learned <span th:text="${spanishWordsLearned}"></span> of those <span th:text="${expandedSpanishWordCount}"></span> words from Spanish to English.</p>
-    <a href="spanish-to-english">Practice Spanish to English</a>
+    <button onclick="document.location='/spanish-to-english'">Practice Spanish to English</button>
+    <button onclick="document.location='/english-to-spanish'">Practice English to Spanish</button>
 
 </body>
 </html>

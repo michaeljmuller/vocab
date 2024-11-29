@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.themullers.vocab.pojo.Gender;
+import org.themullers.vocab.pojo.Language;
+import org.themullers.vocab.pojo.WordAndGender;
 
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class Database {
         createTables();
     }
 
+    /*
     public void incrementIncorrect(String word, int language) {
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -66,12 +70,61 @@ public class Database {
         return jt.queryForList(Sql.GET_KNOWN_WORDS, params, String.class);
     }
 
+     */
+
+    public List<WordAndGender> getKnownWords(Language language) {
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("user", user);
+        params.addValue("language", language.getId());
+
+        return jt.query(Sql.GET_KNOWN_WORDS, params, (rs,i) -> {
+            var wordId = rs.getInt("word_id");
+            var gender = Gender.fromId(rs.getInt("gender"));
+            return new WordAndGender(wordId, gender);
+        });
+    }
+
+    public void incrementCorrect(int wordId, Gender gender, Language language) {
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("user", user);
+        params.addValue("wordId", wordId);
+        params.addValue("gender", gender.getId());
+        params.addValue("language", language.getId());
+        jt.update(Sql.INCREMENT_CORRECT_COUNT, params);
+    }
+
+    public void incrementIncorrect(int wordId, Gender gender, Language language) {
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("user", user);
+        params.addValue("wordId", wordId);
+        params.addValue("gender", gender.getId());
+        params.addValue("language", language.getId());
+        jt.update(Sql.INCREMENT_INCORRECT_COUNT, params);
+    }
+
     protected void createTables() {
         logger.info("creating schema if necessary");
-        jt.getJdbcOperations().execute(Sql.CREATE_CORRECT_COUNT_TABLE);
+        //jt.getJdbcOperations().execute(Sql.CREATE_CORRECT_COUNT_TABLE);
+        jt.getJdbcOperations().execute(Sql.CREATE_WORD_SCORE_TABLE);
     }
 
     public interface Sql {
+
+        String CREATE_WORD_SCORE_TABLE = """
+            create table if not exists word_score (
+                user text,
+                word_id int,
+                gender int,
+                language int,
+                correct_count int default 0,
+                incorrect_count int default 0,
+                primary key (user, word_id, gender, language)  
+            )
+        """;
+
         String CREATE_CORRECT_COUNT_TABLE = """
             create table if not exists correct_count (
                 user text, 
@@ -94,6 +147,18 @@ public class Database {
                 and correct_count.language=:language
         """;
 
+        String INCREMENT_CORRECT_COUNT = """
+            insert into word_score (user, word_id, gender, language, correct_count)
+            values (:user, :wordId, :gender, :language, 1)
+            on conflict (user, word_id, gender, language) do
+                update
+                set correct_count=(word_score.correct_count + 1)
+                where word_score.user=:user
+                and word_id=:wordId
+                and gender=:gender
+                and language=:language
+        """;
+
         String INCREMENT_INCORRECT = """
             insert into correct_count (user, word, language, incorrect_count)
             values (:user, :word, :language, 1)
@@ -105,11 +170,31 @@ public class Database {
                 and correct_count.language=:language
         """;
 
+        String INCREMENT_INCORRECT_COUNT = """
+            insert into word_score (user, word_id, gender, language, correct_count)
+            values (:user, :wordId, :gender, :language, 1)
+            on conflict (user, word_id, gender, language) do
+                update
+                set incorrect_count=(word_score.incorrect_count + 1)
+                where word_score.user=:user
+                and word_id=:wordId
+                and gender=:gender
+                and language=:language
+        """;
+
+/*
         String GET_KNOWN_WORDS = """
-            select word from correct_count 
-            where user=:user 
+            select word from correct_count
+            where user=:user
             and language=:language
             and correct_count.correct_count > 0
+        """;
+ */
+        String GET_KNOWN_WORDS = """
+            select word_id, gender from word_score 
+            where user=:user 
+            and language=:language
+            and word_score.correct_count > 0
         """;
     }
 }

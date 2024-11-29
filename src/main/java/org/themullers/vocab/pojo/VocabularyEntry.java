@@ -3,6 +3,7 @@ package org.themullers.vocab.pojo;
 import java.util.List;
 
 public record VocabularyEntry(
+        int wordId,
         String spanish,
         String spanishMasc,
         String spanishFem,

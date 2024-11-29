@@ -12,8 +12,8 @@ public class SpanishWord extends Word {
     protected String spanish;
     protected List<String> english = new LinkedList<>();
 
-    public SpanishWord(String spanish, PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo, String english) {
-        super(partOfSpeech, gender, isPlural, verbInfo);
+    public SpanishWord(int wordId, String spanish, PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo, String english) {
+        super(wordId, partOfSpeech, gender, isPlural, verbInfo);
         this.spanish = spanish;
         setEnglish(english);
 

@@ -1,4 +1,4 @@
 package org.themullers.vocab.rest;
 
-public record Answer(String word, boolean answeredCorrectly) {
+public record Answer(int wordId, String gender, boolean answeredCorrectly) {
 }

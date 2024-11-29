@@ -23,6 +23,15 @@ public class Controller {
         return mv;
     }
 
+    @GetMapping("/english-to-spanish")
+    public ModelAndView englishToSpanish() {
+        var mv = new ModelAndView("english-to-english");
+        mv.addObject("vocab", vocabulary.getEntries());
+        mv.addObject("spanishWords", vocabulary.getSpanishWords());
+        mv.addObject("englishWords", vocabulary.getEnglishWords());
+        return mv;
+    }
+
     @GetMapping("/")
     public ModelAndView home() {
         var mv = new ModelAndView("home");
@@ -31,5 +40,4 @@ public class Controller {
         mv.addObject("spanishWordsLearned", progressPersister.getProgress().getSpanishWordsLearned().size());
         return mv;
     }
-
 }

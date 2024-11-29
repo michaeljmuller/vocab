@@ -7,8 +7,8 @@ public class EnglishWord extends Word {
     protected String english;
     protected List<String> spanish = new LinkedList<>();
 
-    public EnglishWord(String english, PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo) {
-        super(partOfSpeech, gender, isPlural, verbInfo);
+    public EnglishWord(int wordId, String english, PartOfSpeech partOfSpeech, Gender gender, boolean isPlural, String verbInfo) {
+        super(wordId, partOfSpeech, gender, isPlural, verbInfo);
         this.english = english;
     }
 

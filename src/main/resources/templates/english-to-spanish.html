@@ -9,7 +9,7 @@
             font-size: 20pt;
         }
 
-        #spanish-word {
+        #english-word {
             font-weight: bold;
             margin-bottom: 10px;
         }
@@ -32,7 +32,7 @@
 
         function getWord() {
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', '/spanishWord', true);
+            xhr.open('GET', '/word', true);
 
             xhr.onreadystatechange = function () {
 
@@ -45,8 +45,8 @@
                         alert("Server error: " + response.message);
                     }
                     else {
-                        const spanishWord = document.getElementById('spanish-word');
-                        spanishWord.innerText = response.word.spanish;
+                        const englishWord = document.getElementById('english-word');
+                        englishWord.innerText = response.word.english;
 
                         const progress = document.getElementById('progress');
                         progress.innerText = response.numLearned + " of " + response.numWords + " words learned";
@@ -57,17 +57,16 @@
             xhr.send();
         }
 
-        function putAnswer(wordId, gender, isCorrect) {
+        function putAnswer(word, isCorrect) {
             const requestBody = JSON.stringify({
-                wordId: wordId,
-                gender: gender,
+                word: word,
                 answeredCorrectly: isCorrect
             });
 
             const csrfToken = document.querySelector('input[name="_csrf"]').value;
 
             const xhr = new XMLHttpRequest();
-            xhr.open('PUT', '/spanishWord', true);
+            xhr.open('PUT', '/word', true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("X-CSRF-TOKEN", csrfToken);
             xhr.send(requestBody);
@@ -81,7 +80,7 @@
             const answer = answerElement.value;
             let isCorrect = false;
             for (const english of response.word.english) {
-                if (answer.toUpperCase() === english.toUpperCase()) {
+                if (answer.toUpperCase() === spanish.toUpperCase()) {
                     isCorrect = true;
                     break;
                 }
@@ -102,7 +101,7 @@
             resultElement.innerText = resultText;
             disagreeElement.style.display = displayDisagree ? 'inline' : 'none';
 
-            putAnswer(response.word.wordId, response.word.gender, isCorrect);
+            putAnswer(response.word.english, isCorrect);
 
             answerElement.value = "";
             getWord();
@@ -133,9 +132,9 @@
 <div id="outer">
     <div id="progress"></div>
     <form id="form">
-        <div id="spanish-word">&nbsp;</div>
+        <div id="english-word">&nbsp;</div>
         <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-        <input type="text" id="answer" placeholder="english translation here">
+        <input type="text" id="answer" placeholder="spanish translation here">
         <!-- this dummy button prevents the form from being submitted when the user hits enter -->
         <button type="submit" disabled style="display: none" aria-hidden="true"></button>
         <button id="button">Submit</button>

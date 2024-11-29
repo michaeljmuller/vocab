@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.themullers.vocab.ProgressPersister;
+import org.themullers.vocab.pojo.Gender;
 import org.themullers.vocab.pojo.WordAndProgress;
 
 @RestController
@@ -20,7 +21,22 @@ public class Api {
         this.progressPersister = progressPersister;
     }
 
-    @GetMapping("/word")
+    @GetMapping("/spanishWord")
+    public WordAndProgress getSpanishWord() {
+
+        var progress = progressPersister.getProgress();
+        var word = progress.getRandomUnlearnedSpanishWord();
+        var numWordsLearned = progress.getSpanishWordsLearned().size();
+        var numWords = numWordsLearned + progress.getSpanishWordsNotLearned().size();
+        return new WordAndProgress(word, numWords, numWordsLearned);
+    }
+
+    @PutMapping("/spanishWord")
+    public void putSpanishWord(@RequestBody Answer answer) {
+        progressPersister.recordSpanishWordAnswer(answer.wordId(), Gender.fromLongName(answer.gender()), answer.answeredCorrectly());
+    }
+
+    @GetMapping("/englishWord")
     public WordAndProgress getWord() {
 
         var progress = progressPersister.getProgress();
@@ -30,9 +46,9 @@ public class Api {
         return new WordAndProgress(word, numWords, numWordsLearned);
     }
 
-    @PutMapping("/word")
+    @PutMapping("/englishWord")
     public void putWord(@RequestBody Answer answer) {
-        progressPersister.recordSpanishWordAnswer(answer.word(), answer.answeredCorrectly());
+        // progressPersister.recordEnglishWordAnswer(answer.word(), answer.answeredCorrectly());
     }
 
 }
