@@ -43,35 +43,6 @@ public class Database {
         createTables();
     }
 
-    /*
-    public void incrementIncorrect(String word, int language) {
-        String user = SecurityContextHolder.getContext().getAuthentication().getName();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("user", user);
-        params.addValue("word", word);
-        params.addValue("language", language);
-        jt.update(Sql.INCREMENT_INCORRECT, params);
-    }
-
-    public void incrementCorrect(String word, int language) {
-        String user = SecurityContextHolder.getContext().getAuthentication().getName();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("user", user);
-        params.addValue("word", word);
-        params.addValue("language", language);
-        jt.update(Sql.INCREMENT_CORRECT, params);
-    }
-
-    public List<String> getKnownWords(int language) {
-        String user = SecurityContextHolder.getContext().getAuthentication().getName();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("user", user);
-        params.addValue("language", language);
-        return jt.queryForList(Sql.GET_KNOWN_WORDS, params, String.class);
-    }
-
-     */
-
     public List<WordAndGender> getKnownWords(Language language) {
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -107,7 +78,6 @@ public class Database {
 
     protected void createTables() {
         logger.info("creating schema if necessary");
-        //jt.getJdbcOperations().execute(Sql.CREATE_CORRECT_COUNT_TABLE);
         jt.getJdbcOperations().execute(Sql.CREATE_WORD_SCORE_TABLE);
     }
 
@@ -125,28 +95,6 @@ public class Database {
             )
         """;
 
-        String CREATE_CORRECT_COUNT_TABLE = """
-            create table if not exists correct_count (
-                user text, 
-                word text, 
-                language int, 
-                correct_count int default 0, 
-                incorrect_count int default 0, 
-                primary key (user, word, language)
-            )  
-        """;
-
-        String INCREMENT_CORRECT = """
-            insert into correct_count (user, word, language, correct_count)
-            values (:user, :word, :language, 1)
-            on conflict(user, word, language) do 
-                update  
-                set correct_count=(correct_count.correct_count + 1) 
-                where correct_count.user=:user
-                and correct_count.word=:word
-                and correct_count.language=:language
-        """;
-
         String INCREMENT_CORRECT_COUNT = """
             insert into word_score (user, word_id, gender, language, correct_count)
             values (:user, :wordId, :gender, :language, 1)
@@ -157,17 +105,6 @@ public class Database {
                 and word_id=:wordId
                 and gender=:gender
                 and language=:language
-        """;
-
-        String INCREMENT_INCORRECT = """
-            insert into correct_count (user, word, language, incorrect_count)
-            values (:user, :word, :language, 1)
-            on conflict(user, word, language) do 
-                update  
-                set incorrect_count=(correct_count.incorrect_count + 1) 
-                where correct_count.user=:user
-                and correct_count.word=:word
-                and correct_count.language=:language
         """;
 
         String INCREMENT_INCORRECT_COUNT = """
@@ -182,14 +119,6 @@ public class Database {
                 and language=:language
         """;
 
-/*
-        String GET_KNOWN_WORDS = """
-            select word from correct_count
-            where user=:user
-            and language=:language
-            and correct_count.correct_count > 0
-        """;
- */
         String GET_KNOWN_WORDS = """
             select word_id, gender from word_score 
             where user=:user 
