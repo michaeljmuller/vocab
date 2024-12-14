@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.themullers.vocab.ProgressPersister;
+import org.themullers.vocab.pojo.EnglishWord;
+import org.themullers.vocab.pojo.EnglishWordAndProgress;
 import org.themullers.vocab.pojo.Gender;
-import org.themullers.vocab.pojo.WordAndProgress;
+import org.themullers.vocab.pojo.SpanishWordAndProgress;
 
 @RestController
 public class Api {
@@ -22,13 +24,13 @@ public class Api {
     }
 
     @GetMapping("/spanishWord")
-    public WordAndProgress getSpanishWord() {
+    public SpanishWordAndProgress getSpanishWord() {
 
         var progress = progressPersister.getProgress();
         var word = progress.getRandomUnlearnedSpanishWord();
         var numWordsLearned = progress.getSpanishWordsLearned().size();
         var numWords = numWordsLearned + progress.getSpanishWordsNotLearned().size();
-        return new WordAndProgress(word, numWords, numWordsLearned);
+        return new SpanishWordAndProgress(word, numWords, numWordsLearned);
     }
 
     @PutMapping("/spanishWord")
@@ -37,13 +39,13 @@ public class Api {
     }
 
     @GetMapping("/englishWord")
-    public WordAndProgress getWord() {
+    public EnglishWordAndProgress getWord() {
 
         var progress = progressPersister.getProgress();
-        var word = progress.getRandomUnlearnedSpanishWord();
-        var numWordsLearned = progress.getSpanishWordsLearned().size();
-        var numWords = numWordsLearned + progress.getSpanishWordsNotLearned().size();
-        return new WordAndProgress(word, numWords, numWordsLearned);
+        var word = progress.getRandomUnlearnedEnglishWord();
+        var numWordsLearned = progress.getEnglishWordsLearned().size();
+        var numWords = numWordsLearned + progress.getEnglishWordsNotLearned().size();
+        return new EnglishWordAndProgress(word, numWords, numWordsLearned);
     }
 
     @PutMapping("/englishWord")

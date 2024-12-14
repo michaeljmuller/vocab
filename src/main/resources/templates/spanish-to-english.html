@@ -81,7 +81,7 @@
             const answer = answerElement.value;
             let isCorrect = false;
             for (const english of response.word.english) {
-                if (answer.toUpperCase() === english.toUpperCase()) {
+                if (compareStringsIgnoringCaseAndPunctuation(answer, english)) {
                     isCorrect = true;
                     break;
                 }
@@ -106,6 +106,22 @@
 
             answerElement.value = "";
             getWord();
+        }
+
+        function compareStringsIgnoringCaseAndPunctuation(str1, str2) {
+            // Normalize and clean the strings
+            const processedStr1 = normalizeAndClean(str1);
+            const processedStr2 = normalizeAndClean(str2);
+
+            // Compare the processed strings
+            return processedStr1 === processedStr2;
+        }
+        function normalizeAndClean(input) {
+            // Normalize the string to NFC form
+            const normalized = input.normalize("NFC");
+
+            // Remove punctuation while preserving letters (including accented ones) and numbers
+            return normalized.replace(/[^a-zA-Z0-9\u00C0-\u017F]/g, "").toLowerCase();
         }
 
         window.onload = function() {

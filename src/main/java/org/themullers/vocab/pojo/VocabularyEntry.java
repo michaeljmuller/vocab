@@ -11,6 +11,7 @@ public record VocabularyEntry(
         PartOfSpeech partOfSpeech,
         String quantity,
         String english,
+        String englishMasc,
         String englishFem,
         int priority,
         List<String> tags,

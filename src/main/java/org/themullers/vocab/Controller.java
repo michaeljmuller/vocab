@@ -25,7 +25,7 @@ public class Controller {
 
     @GetMapping("/english-to-spanish")
     public ModelAndView englishToSpanish() {
-        var mv = new ModelAndView("english-to-english");
+        var mv = new ModelAndView("english-to-spanish");
         mv.addObject("vocab", vocabulary.getEntries());
         mv.addObject("spanishWords", vocabulary.getSpanishWords());
         mv.addObject("englishWords", vocabulary.getEnglishWords());

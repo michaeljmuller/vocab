@@ -39,7 +39,8 @@ abstract public class Vocabulary {
 
             var spanishMasc = entry.spanishMasc();
             if (spanishMasc != null && !spanishMasc.isBlank()) {
-                spanishWords.add(new SpanishWord(entry.wordId(), spanishMasc, entry.partOfSpeech(), Gender.MASCULINE, isPlural, entry.verbInfo(), entry.english()));
+                var english = entry.englishMasc() == null || entry.englishMasc().isBlank() ? entry.english() : entry.englishMasc();
+                spanishWords.add(new SpanishWord(entry.wordId(), spanishMasc, entry.partOfSpeech(), Gender.MASCULINE, isPlural, entry.verbInfo(), english));
             }
 
             var spanishFem = entry.spanishFem();
@@ -53,16 +54,28 @@ abstract public class Vocabulary {
 
     protected void buildEnglishWordList() {
         for (var entry : entries) {
-            var masculine = entry.english();
-            var feminine = entry.englishFem();
+
+            var englishNeutral = entry.english();
+            var englishMasculine = entry.englishMasc();
+            var englishFeminine = entry.englishFem();
+
             boolean isPlural = entry.quantity() != null && "plural".equalsIgnoreCase(entry.quantity());
 
-            var feminineVariantExists = feminine != null && !feminine.isBlank();
+            if (englishNeutral != null && !englishNeutral.isBlank()) {
 
-            englishWords.add(new EnglishWord(entry.wordId(), masculine, entry.partOfSpeech(), feminineVariantExists ? Gender.MASCULINE : null, isPlural, entry.verbInfo()));
+                var englishWord = new EnglishWord(entry.wordId(), englishNeutral, entry.partOfSpeech(), Gender.NEUTRAL, isPlural, entry.verbInfo(), entry.spanish());
+                englishWord.setSpanish(entry.spanishMasc());
+                englishWord.setSpanish(entry.spanishFem());
+                englishWords.add(englishWord);
 
-            if (feminineVariantExists) {
-                englishWords.add(new EnglishWord(entry.wordId(), feminine, entry.partOfSpeech(), Gender.FEMININE, isPlural, entry.verbInfo()));
+            }
+
+            if (englishMasculine != null && !englishMasculine.isBlank()) {
+                englishWords.add(new EnglishWord(entry.wordId(), englishMasculine, entry.partOfSpeech(), Gender.MASCULINE, isPlural, entry.verbInfo(), entry.spanish()));
+            }
+
+            if (englishFeminine != null && !englishFeminine.isBlank()) {
+                englishWords.add(new EnglishWord(entry.wordId(), englishFeminine, entry.partOfSpeech(), Gender.FEMININE, isPlural, entry.verbInfo(), entry.spanish()));
             }
         }
     }
@@ -77,12 +90,13 @@ abstract public class Vocabulary {
         var partOfSpeech = getPartOfSpeech(get(row, columnNum++));
         var quantity     = getString(get(row, columnNum++));
         var english      = getString(get(row, columnNum++));
+        var englishMasc  = getString(get(row, columnNum++));
         var englishFem   = getString(get(row, columnNum++));
         var priority     = getInt(get(row, columnNum++));
         var tags         = getList(get(row, columnNum++));
         var lesson       = getInt(get(row, columnNum++));
 
-        entries.add(new VocabularyEntry(wordId, spanish, spanishMasc, spanishFem, verbInfo, partOfSpeech, quantity, english, englishFem, priority, tags, lesson));
+        entries.add(new VocabularyEntry(wordId, spanish, spanishMasc, spanishFem, verbInfo, partOfSpeech, quantity, english, englishMasc, englishFem, priority, tags, lesson));
     }
 
     abstract Object get(Object row, int index);
